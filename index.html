@@ -661,11 +661,17 @@
 
         // Get total commitments
         async function getTotalCommitments() {
-            const result = await rpcCall('eth_call', [{
-                to: CONTRACT_ADDRESS,
-                data: ABI.nextCommitmentId
-            }, 'latest']);
-            return parseInt(result, 16);
+            try {
+                const result = await rpcCall('eth_call', [{
+                    to: CONTRACT_ADDRESS,
+                    data: ABI.nextCommitmentId
+                }, 'latest']);
+                if (!result || result === '0x') return 0;
+                return parseInt(result, 16);
+            } catch (err) {
+                console.error('Failed to get total commitments:', err);
+                return 0;
+            }
         }
 
         // Get commitment by ID
